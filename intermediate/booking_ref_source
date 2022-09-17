@@ -1,0 +1,22 @@
+--"Write a query to find the top marketing channel and percentage of first rental bookings from the aforementioned marketing channel."
+
+-- get 1st booking date
+with cte as 
+(SELECT 
+  booking_id,
+  user_id,
+  row_number() over (partition by user_id order by booking_date) as rownum
+FROM bookings)
+
+select *
+--calculate percentage of bookings
+from (
+SELECT  
+  a.channel,
+  round(100*count(a.booking_id)/sum(count(a.booking_id))over()) as bookings
+FROM booking_attribution a  
+  JOIN cte on a.booking_id = cte.booking_id
+WHERE cte.rownum = 1
+group by a.channel) booking_percentage
+order by bookings desc 
+limit 1
