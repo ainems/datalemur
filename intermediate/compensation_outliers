@@ -1,0 +1,29 @@
+--"Write a query that shows the following data for each compensation outlier: employee ID, salary, and whether they are potentially overpaid or potentially underpaid."
+
+--get average salary by title
+with t1 as (
+SELECT 
+  employee_id,
+  salary,
+  title,
+  avg(salary) over (partition by title order by title) as title_avg
+FROM employee_pay
+),
+--assign overpaid/underpaid status
+t2 as (
+select 
+  employee_id,
+  salary,
+  title,
+  case 
+    when salary > 2*title_avg then 'Overpaid'
+    when salary < .5*title_avg then 'Underpaid'
+    else null end as status
+from t1)
+select 
+  employee_id,
+  salary,
+  status
+from t2
+where status = 'Overpaid' or status = 'Underpaid'
+order by employee_id
