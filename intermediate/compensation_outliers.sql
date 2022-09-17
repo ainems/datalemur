@@ -11,19 +11,19 @@ FROM employee_pay
 ),
 --assign overpaid/underpaid status
 t2 as (
-select 
+SELECT 
   employee_id,
   salary,
   title,
-  case 
-    when salary > 2*title_avg then 'Overpaid'
-    when salary < .5*title_avg then 'Underpaid'
-    else null end as status
-from t1)
-select 
+  CASE 
+    WHEN salary > 2*title_avg then 'Overpaid'
+    WHEN salary < .5*title_avg then 'Underpaid'
+    ELSE null END as status
+FROM t1)
+SELECT 
   employee_id,
   salary,
   status
-from t2
-where status = 'Overpaid' or status = 'Underpaid'
-order by employee_id
+FROM t2
+WHERE status = 'Overpaid' or status = 'Underpaid'
+ORDER BY employee_id
